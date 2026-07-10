@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Orders – Admin{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙ Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="admin-link">📦 Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-link active">🧾 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-link">👥 Users</a>
+      <a href="{{ url_for('products.index') }}" class="admin-link">🏠 View Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <h1 class="admin-page-title">All Orders</h1>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Order #</th><th>Customer</th><th>Email</th><th>Total</th><th>Status</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>#{{ order.id }}</td>
+          <td>{{ order.customer.name }}</td>
+          <td>{{ order.customer.email }}</td>
+          <td>${{ "%.2f"|format(order.total) }}</td>
+          <td><span class="status-badge status-{{ order.status.lower() }}">{{ order.status }}</span></td>
+          <td>{{ order.created_at.strftime('%d %b %Y, %H:%M') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="text-align:center;color:#999;">No orders yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

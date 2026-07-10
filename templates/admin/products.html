@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Manage Products – Admin{% endblock %}
+{% block content %}
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙ Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="admin-link active">📦 Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-link">🧾 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-link">👥 Users</a>
+      <a href="{{ url_for('products.index') }}" class="admin-link">🏠 View Site</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-section-header">
+      <h1 class="admin-page-title">Products</h1>
+      <a href="{{ url_for('admin.add_product') }}" class="btn-primary">+ Add Product</a>
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Category</th><th>Color</th><th>Size</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for p in items %}
+        <tr>
+          <td>#{{ p.id }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.category }}</td>
+          <td>{{ p.color }}</td>
+          <td>{{ p.size }}</td>
+          <td>${{ "%.2f"|format(p.price) }}</td>
+          <td><span class="{% if p.stock == 0 %}text-danger{% elif p.stock < 5 %}text-warn{% endif %}">{{ p.stock }}</span></td>
+          <td class="table-actions">
+            <a href="{{ url_for('admin.edit_product', product_id=p.id) }}" class="action-btn">Edit</a>
+            <form action="{{ url_for('admin.delete_product', product_id=p.id) }}" method="POST" style="display:inline" onsubmit="return confirm('Delete this product?')">
+              <button type="submit" class="action-btn action-btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" style="text-align:center;color:#999;">No products yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if product else 'Add' }} Product – Admin{% endblock %}
+{% block content %}
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙ Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="admin-link active">📦 Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-link">🧾 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-link">👥 Users</a>
+      <a href="{{ url_for('products.index') }}" class="admin-link">🏠 View Site</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <h1 class="admin-page-title">{{ 'Edit Product' if product else 'Add New Product' }}</h1>
+
+    <div class="admin-form-card">
+      <form action="{{ url_for('admin.edit_product', product_id=product.id) if product else url_for('admin.add_product') }}" method="POST" class="auth-form">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" name="name" value="{{ product.name if product else '' }}" placeholder="e.g. Nordic 3-Seat Sofa" required>
+          </div>
+          <div class="form-group">
+            <label>Price (USD) *</label>
+            <input type="number" name="price" step="0.01" min="0" value="{{ product.price if product else '' }}" placeholder="e.g. 299.99" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="category" required>
+              {% for cat in ['Living Room','Bedroom','Dining','Office','Outdoor'] %}
+              <option value="{{ cat }}" {{ 'selected' if product and product.category == cat else '' }}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Color</label>
+            <select name="color">
+              {% for col in ['White','Black','Brown','Beige','Gray'] %}
+              <option value="{{ col }}" {{ 'selected' if product and product.color == col else '' }}>{{ col }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Size</label>
+            <select name="size">
+              {% for sz in ['Small','Medium','Large'] %}
+              <option value="{{ sz }}" {{ 'selected' if product and product.size == sz else '' }}>{{ sz }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Stock Quantity</label>
+          <input type="number" name="stock" min="0" value="{{ product.stock if product else 0 }}">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea name="description" rows="4" placeholder="Describe the product...">{{ product.description if product else '' }}</textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">{{ 'Save Changes' if product else 'Add Product' }}</button>
+          <a href="{{ url_for('admin.products') }}" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

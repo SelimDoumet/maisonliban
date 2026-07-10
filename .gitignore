@@ -1,0 +1,23 @@
+# Environment / secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Database
+*.db
+instance/
+
+# Generated ML artifacts (regenerate with `python train_model.py`)
+ml/*.pkl
+ml/*.csv
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

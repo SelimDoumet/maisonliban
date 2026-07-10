@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Users – Admin{% endblock %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙ Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-link">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="admin-link">📦 Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-link">🧾 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-link active">👥 Users</a>
+      <a href="{{ url_for('products.index') }}" class="admin-link">🏠 View Site</a>
+    </nav>
+  </aside>
+  <div class="admin-main">
+    <h1 class="admin-page-title">Registered Users</h1>
+    <table class="admin-table">
+      <thead>
+        <tr><th>ID</th><th>Name</th><th>Email</th><th>Orders</th><th>Joined</th></tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>#{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.orders|length }}</td>
+          <td>{{ user.created_at.strftime('%d %b %Y') }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" style="text-align:center;color:#999;">No users yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

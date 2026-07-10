@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}Products – MaisonLiban{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Our Collection</h1>
+  <p class="page-sub">{{ items|length }} product{{ 's' if items|length != 1 else '' }} found</p>
+</div>
+
+<div class="shop-layout">
+  <!-- SIDEBAR FILTERS -->
+  <aside class="filter-sidebar">
+    <form action="{{ url_for('products.product_list') }}" method="GET" id="filterForm">
+      <h3 class="filter-heading">Filters</h3>
+
+      <div class="filter-group">
+        <label class="filter-label">Search</label>
+        <input name="q" type="text" class="filter-input" value="{{ selected.q }}" placeholder="Search products...">
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        {% for cat in categories %}
+        <label class="filter-check">
+          <input type="radio" name="category" value="{{ cat }}" {% if selected.category == cat %}checked{% endif %}>
+          {{ cat }}
+        </label>
+        {% endfor %}
+        <label class="filter-check">
+          <input type="radio" name="category" value="" {% if not selected.category %}checked{% endif %}> All Categories
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Color</label>
+        {% for color in colors %}
+        <label class="filter-check">
+          <input type="radio" name="color" value="{{ color }}" {% if selected.color == color %}checked{% endif %}>
+          {{ color }}
+        </label>
+        {% endfor %}
+        <label class="filter-check">
+          <input type="radio" name="color" value="" {% if not selected.color %}checked{% endif %}> All Colors
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Size</label>
+        {% for size in sizes %}
+        <label class="filter-check">
+          <input type="radio" name="size" value="{{ size }}" {% if selected.size == size %}checked{% endif %}>
+          {{ size }}
+        </label>
+        {% endfor %}
+        <label class="filter-check">
+          <input type="radio" name="size" value="" {% if not selected.size %}checked{% endif %}> All Sizes
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Price Range (USD)</label>
+        <div class="price-inputs">
+          <input name="min_price" type="number" class="filter-input" placeholder="Min" value="{{ selected.min_price if selected.min_price else '' }}" min="0">
+          <span>–</span>
+          <input name="max_price" type="number" class="filter-input" placeholder="Max" value="{{ selected.max_price if selected.max_price < 99999 else '' }}" min="0">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:1rem;">Apply Filters</button>
+      <a href="{{ url_for('products.product_list') }}" class="clear-filters">Clear all filters</a>
+    </form>
+  </aside>
+
+  <!-- PRODUCT GRID -->
+  <div class="products-area">
+    {% if items %}
+    <div class="products-grid">
+      {% for product in items %}
+      <div class="product-card">
+        <a href="{{ url_for('products.product_detail', product_id=product.id) }}">
+          <div class="product-img">
+            <img src="{{ product.image }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+            {% if product.stock == 0 %}<span class="product-badge badge-dark">Out of Stock</span>{% endif %}
+          </div>
+          <div class="product-info">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-sub">{{ product.size }} · {{ product.color }} · {{ product.category }}</div>
+            <div class="product-row">
+              <span class="product-price">${{ "%.2f"|format(product.price) }}</span>
+              <span class="stock-label {% if product.stock == 0 %}out{% elif product.stock < 5 %}low{% endif %}">
+                {% if product.stock == 0 %}Out of stock{% elif product.stock < 5 %}Only {{ product.stock }} left{% else %}In stock{% endif %}
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>No products match your filters.</p>
+      <a href="{{ url_for('products.product_list') }}" class="btn-primary">Clear Filters</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

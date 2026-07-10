@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MaisonLiban – Premium Furniture{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}">{{ msg }} <span class="flash-close" onclick="this.parentElement.remove()">×</span></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<nav class="navbar">
+  <a href="{{ url_for('products.index') }}" class="nav-logo">MAISON<span>LIBAN</span></a>
+  <ul class="nav-links">
+    <li><a href="{{ url_for('products.product_list') }}?category=Living Room">Living Room</a></li>
+    <li><a href="{{ url_for('products.product_list') }}?category=Bedroom">Bedroom</a></li>
+    <li><a href="{{ url_for('products.product_list') }}?category=Dining">Dining</a></li>
+    <li><a href="{{ url_for('products.product_list') }}?category=Office">Office</a></li>
+    <li><a href="{{ url_for('products.product_list') }}?category=Outdoor">Outdoor</a></li>
+    <li><a href="{{ url_for('products.about') }}">About Us</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="{{ url_for('cart.view_cart') }}" class="nav-icon" title="Cart">
+      🛒 {% if session.get('cart') %}<span class="cart-badge">{{ session['cart']|length }}</span>{% endif %}
+    </a>
+    {% if current_user.is_authenticated %}
+      {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}" class="nav-btn nav-btn-outline">Admin</a>
+      {% endif %}
+      <span class="nav-user">{{ current_user.name.split()[0] }}</span>
+      <a href="{{ url_for('auth.logout') }}" class="nav-btn">Sign Out</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" class="nav-btn">Sign In</a>
+      <a href="{{ url_for('auth.signup') }}" class="nav-btn nav-btn-gold">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand-col">
+      <div class="footer-logo">MAISONLIBAN</div>
+      <p class="footer-desc">Premium furniture crafted for Lebanese and Gulf homes. Quality, elegance, and comfort delivered to your door.</p>
+      <div class="footer-contacts">
+        <p>📞 +961 71 491 326</p>
+        <p>📞 +961 70 022 815</p>
+        <p>✉ doumetselim@gmail.com</p>
+        <p>✉ hasanassi@gmail.com</p>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="{{ url_for('products.product_list') }}?category=Living Room">Living Room</a></li>
+        <li><a href="{{ url_for('products.product_list') }}?category=Bedroom">Bedroom</a></li>
+        <li><a href="{{ url_for('products.product_list') }}?category=Dining">Dining</a></li>
+        <li><a href="{{ url_for('products.product_list') }}?category=Office">Office</a></li>
+        <li><a href="{{ url_for('products.product_list') }}?category=Outdoor">Outdoor</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="{{ url_for('products.about') }}">About Us</a></li>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Showrooms</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Find Us</h4>
+      <div class="social-links">
+        <a href="#" class="social-pill">Instagram</a>
+        <a href="#" class="social-pill">Facebook</a>
+        <a href="#" class="social-pill">WhatsApp</a>
+        <a href="#" class="social-pill">TikTok</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 MaisonLiban. All rights reserved.</span>
+    <span>Made with ♥ in Beirut</span>
+  </div>
+</footer>
+
+<div class="chat-bubble" onclick="toggleChat()" title="AI Design Assistant">✦</div>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <span>✦ AI Design Assistant</span>
+    <button onclick="toggleChat()">×</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg assistant">Hi! I'm your MaisonLiban design assistant. Tell me about your room and I'll help you find the perfect furniture!</div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Describe your room or style..." onkeydown="if(event.key==='Enter') sendChat()">
+    <button onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

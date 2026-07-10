@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} – MaisonLiban{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+  <a href="{{ url_for('products.index') }}">Home</a> /
+  <a href="{{ url_for('products.product_list') }}?category={{ product.category }}">{{ product.category }}</a> /
+  <span>{{ product.name }}</span>
+</div>
+
+<div class="detail-layout">
+  <div class="detail-img-col">
+    <div class="detail-img-box">
+      <img src="{{ product.image }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+    </div>
+  </div>
+  <div class="detail-info-col">
+    <div class="detail-cat-tag">{{ product.category }}</div>
+    <h1 class="detail-title">{{ product.name }}</h1>
+    <div class="detail-price">${{ "%.2f"|format(product.price) }}</div>
+    <div class="detail-meta">
+      <div class="detail-meta-row"><span>Color</span><strong>{{ product.color }}</strong></div>
+      <div class="detail-meta-row"><span>Size</span><strong>{{ product.size }}</strong></div>
+      <div class="detail-meta-row"><span>Availability</span>
+        <strong class="{% if product.stock == 0 %}text-danger{% elif product.stock < 5 %}text-warn{% else %}text-success{% endif %}">
+          {% if product.stock == 0 %}Out of Stock{% elif product.stock < 5 %}Only {{ product.stock }} left{% else %}In Stock ({{ product.stock }} units){% endif %}
+        </strong>
+      </div>
+    </div>
+    <p class="detail-desc">{{ product.description }}</p>
+    {% if product.stock > 0 %}
+    <form action="{{ url_for('cart.add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
+      <div class="qty-row">
+        <label>Quantity</label>
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+      </div>
+      <button type="submit" class="btn-primary btn-large">Add to Cart 🛒</button>
+    </form>
+    {% else %}
+    <button class="btn-primary btn-large" disabled>Out of Stock</button>
+    {% endif %}
+    <div class="detail-features">
+      <div class="feature-item">🚚 Free delivery in Beirut over $30</div>
+      <div class="feature-item">🔧 Assembly included</div>
+      <div class="feature-item">↩ 30-day returns</div>
+    </div>
+  </div>
+</div>
+
+<!-- ML SIMILAR PRODUCTS -->
+<section class="section" id="ml-similar-section">
+  <div class="section-header">
+    <h2 class="section-title">✦ Similar Products</h2>
+    <span style="font-size:12px;color:var(--muted);background:var(--cream2);padding:4px 12px;border-radius:20px;">ML-Powered</span>
+  </div>
+  <div class="products-grid" id="similar-grid">
+    <div style="color:var(--muted);font-size:14px;padding:1rem;">Loading...</div>
+  </div>
+</section>
+
+{% if related %}
+<section class="section">
+  <div class="section-header"><h2 class="section-title">You might also like</h2></div>
+  <div class="products-grid">
+    {% for p in related %}
+    <div class="product-card" onclick="window.location='{{ url_for('products.product_detail', product_id=p.id) }}'">
+      <div class="product-img">
+        <img src="{{ p.image }}" alt="{{ p.name }}" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div class="product-info">
+        <div class="product-name">{{ p.name }}</div>
+        <div class="product-sub">{{ p.size }} · {{ p.color }}</div>
+        <div class="product-row">
+          <span class="product-price">${{ "%.2f"|format(p.price) }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<script>
+fetch('/api/recommendations/similar/{{ product.id }}')
+  .then(r => r.json())
+  .then(data => {
+    const recs = data.recommendations;
+    const grid = document.getElementById('similar-grid');
+    if (!recs || recs.length === 0) {
+      grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:1rem;">Run python train_model.py to enable ML recommendations.</div>';
+      return;
+    }
+    grid.innerHTML = '';
+    recs.forEach(p => {
+      grid.innerHTML += `
+        <div class="product-card" onclick="window.location='/products/${p.product_id}'" style="cursor:pointer;">
+          <div class="product-img">
+            <img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=font-size:3rem;display:flex;align-items:center;justify-content:center;height:100%>🛋️</div>'">
+          </div>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-sub">${p.size} · ${p.color}</div>
+            <div class="product-row">
+              <span class="product-price">$${p.price.toFixed(2)}</span>
+              <span class="product-cat">${p.category}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+  })
+  .catch(() => {
+    document.getElementById('similar-grid').innerHTML = '<div style="color:var(--muted);font-size:14px;">Could not load.</div>';
+  });
+</script>
+
+{% endblock %}

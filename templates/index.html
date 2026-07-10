@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}MaisonLiban – Premium Furniture for Your Home{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">✦ Crafted for Lebanese Homes</div>
+    <h1 class="hero-title">Furniture that<br>tells your <em>story</em></h1>
+    <p class="hero-desc">Discover handpicked pieces designed for comfort, elegance, and lasting quality — from Beirut to the Gulf.</p>
+    <div class="hero-ctas">
+      <a href="{{ url_for('products.product_list') }}" class="btn-primary">Shop Now</a>
+      <a href="{{ url_for('products.about') }}" class="btn-secondary">About Us</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="240" width="360" height="12" rx="3" fill="#C8BFB0"/>
+        <ellipse cx="200" cy="244" rx="120" ry="10" fill="#B8A898"/>
+        <rect x="70" y="170" width="260" height="70" rx="12" fill="#5C4A3A"/>
+        <rect x="70" y="140" width="260" height="40" rx="10" fill="#6B5847"/>
+        <rect x="78" y="176" width="115" height="55" rx="8" fill="#7A6557"/>
+        <rect x="207" y="176" width="115" height="55" rx="8" fill="#7A6557"/>
+        <rect x="56" y="158" width="30" height="72" rx="8" fill="#5C4A3A"/>
+        <rect x="314" y="158" width="30" height="72" rx="8" fill="#5C4A3A"/>
+        <rect x="88" y="148" width="45" height="38" rx="7" fill="#D4A574" opacity="0.9"/>
+        <rect x="270" y="150" width="42" height="35" rx="7" fill="#E8D5C0" opacity="0.9"/>
+        <rect x="328" y="195" width="55" height="8" rx="3" fill="#8B7355"/>
+        <rect x="337" y="203" width="4" height="38" fill="#7A6040"/>
+        <rect x="369" y="203" width="4" height="38" fill="#7A6040"/>
+        <rect x="343" y="165" width="5" height="32" fill="#A09080"/>
+        <polygon points="328,165 370,165 360,145 338,145" fill="#E8D5C0" opacity="0.9"/>
+        <ellipse cx="32" cy="195" rx="15" ry="20" fill="#4A6741"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="search-bar-section">
+  <form action="{{ url_for('products.product_list') }}" method="GET" class="search-form">
+    <input name="q" type="text" class="search-input" placeholder="Search for furniture, styles, materials...">
+    <select name="category" class="filter-select">
+      <option value="">Category</option>
+      <option>Living Room</option><option>Bedroom</option>
+      <option>Dining</option><option>Office</option><option>Outdoor</option>
+    </select>
+    <select name="color" class="filter-select">
+      <option value="">Color</option>
+      <option>White</option><option>Black</option>
+      <option>Brown</option><option>Beige</option><option>Gray</option>
+    </select>
+    <select name="size" class="filter-select">
+      <option value="">Size</option>
+      <option>Small</option><option>Medium</option><option>Large</option>
+    </select>
+    <button type="submit" class="search-btn">Search</button>
+  </form>
+</section>
+
+<section class="section">
+  <div class="section-header"><h2 class="section-title">Shop by Room</h2></div>
+  <div class="categories-grid">
+    {% for cat, icon in [('Living Room','🛋️'),('Bedroom','🛏️'),('Dining','🍽️'),('Office','💼'),('Outdoor','🌿')] %}
+    <a href="{{ url_for('products.product_list') }}?category={{ cat }}" class="cat-card">
+      <div class="cat-icon">{{ icon }}</div>
+      <div class="cat-name">{{ cat }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Featured Collection</h2>
+    <a href="{{ url_for('products.product_list') }}" class="see-all">See all →</a>
+  </div>
+  <div class="products-grid">
+    {% for product in featured %}
+    <div class="product-card" onclick="window.location='{{ url_for('products.product_detail', product_id=product.id) }}'">
+      <div class="product-img">
+        <img src="{{ product.image }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <div class="product-info">
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-sub">{{ product.size }} · {{ product.color }}</div>
+        <div class="product-row">
+          <span class="product-price">${{ "%.2f"|format(product.price) }}</span>
+          <span class="product-cat">{{ product.category }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ML RECOMMENDATIONS -->
+<section class="section" id="ml-section">
+  <div class="section-header">
+    <h2 class="section-title">✦ Recommended For You</h2>
+    <span style="font-size:12px;color:var(--muted);background:var(--cream2);padding:4px 12px;border-radius:20px;">Powered by ML</span>
+  </div>
+  <div class="products-grid" id="rec-grid">
+    <div style="color:var(--muted);font-size:14px;padding:1rem;">Loading recommendations...</div>
+  </div>
+</section>
+
+<section class="ai-banner">
+  <div class="ai-text">
+    <h3>Not sure what fits your space?</h3>
+    <p>Our AI design assistant helps you find the perfect furniture match — just describe your room, style, and budget.</p>
+  </div>
+  <button class="ai-cta" onclick="toggleChat()">✦ Chat with AI Assistant</button>
+</section>
+
+<script>
+fetch('/api/recommendations/for-you')
+  .then(r => r.json())
+  .then(data => {
+    const recs = data.recommendations;
+    const grid = document.getElementById('rec-grid');
+    if (!recs || recs.length === 0) {
+      grid.innerHTML = '<div style="color:var(--muted);font-size:14px;padding:1rem;">Run python train_model.py to enable ML recommendations.</div>';
+      return;
+    }
+    grid.innerHTML = '';
+    recs.forEach(p => {
+      grid.innerHTML += `
+        <div class="product-card" onclick="window.location='/products/${p.product_id}'" style="cursor:pointer;">
+          <div class="product-img">
+            <img src="${p.image}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=font-size:3rem;display:flex;align-items:center;justify-content:center;height:100%>🛋️</div>'">
+          </div>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-sub">${p.size} · ${p.color}</div>
+            <div class="product-row">
+              <span class="product-price">$${p.price.toFixed(2)}</span>
+              <span class="product-cat">${p.category}</span>
+            </div>
+          </div>
+        </div>`;
+    });
+  })
+  .catch(() => {
+    document.getElementById('rec-grid').innerHTML = '<div style="color:var(--muted);font-size:14px;padding:1rem;">Could not load recommendations.</div>';
+  });
+</script>
+
+{% endblock %}

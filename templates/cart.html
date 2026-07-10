@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Cart – MaisonLiban{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Your Cart</h1>
+</div>
+<div class="cart-layout">
+  <div class="cart-items">
+    {% if items %}
+      {% for item in items %}
+      <div class="cart-item">
+        <div class="cart-item-img">
+          <img src="{{ item.product.image }}" alt="{{ item.product.name }}" style="width:64px;height:64px;object-fit:cover;border-radius:6px;">
+        </div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">{{ item.product.name }}</div>
+          <div class="cart-item-meta">{{ item.product.size }} · {{ item.product.color }}</div>
+          <div class="cart-item-price">${{ "%.2f"|format(item.product.price) }} × {{ item.qty }}</div>
+        </div>
+        <div class="cart-item-subtotal">${{ "%.2f"|format(item.subtotal) }}</div>
+        <a href="{{ url_for('cart.remove_from_cart', product_id=item.product.id) }}" class="cart-remove">✕</a>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <p>Your cart is empty.</p>
+        <a href="{{ url_for('products.product_list') }}" class="btn-primary">Browse Products</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if items %}
+  <div class="cart-summary">
+    <h3>Order Summary</h3>
+    <div class="summary-row"><span>Subtotal</span><span>${{ "%.2f"|format(total) }}</span></div>
+    <div class="summary-row"><span>Delivery</span><span>${{ "%.2f"|format(delivery) }}</span></div>
+    <div class="summary-row summary-total"><span>Total</span><span>${{ "%.2f"|format(grand_total) }}</span></div>
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('cart.checkout') }}" method="POST">
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:1rem;">Place Order</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}" class="btn-primary" style="display:block;text-align:center;margin-top:1rem;">Sign In to Checkout</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

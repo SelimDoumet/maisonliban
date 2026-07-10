@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard – MaisonLiban{% endblock %}
+{% block content %}
+
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚙ Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-link active">📊 Dashboard</a>
+      <a href="{{ url_for('admin.products') }}" class="admin-link">📦 Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="admin-link">🧾 Orders</a>
+      <a href="{{ url_for('admin.users') }}" class="admin-link">👥 Users</a>
+      <a href="{{ url_for('products.index') }}" class="admin-link">🏠 View Site</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <h1 class="admin-page-title">Dashboard</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value">{{ total_products }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Registered Users</div>
+        <div class="stat-value">{{ total_users }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-value">{{ total_orders }}</div>
+      </div>
+      <div class="stat-card stat-card-gold">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value">${{ "%.2f"|format(revenue) }}</div>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <div class="admin-section-header">
+        <h2>Recent Orders</h2>
+        <a href="{{ url_for('admin.orders') }}">View all →</a>
+      </div>
+      <table class="admin-table">
+        <thead>
+          <tr><th>Order #</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr>
+        </thead>
+        <tbody>
+          {% for order in recent_orders %}
+          <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.customer.name }}</td>
+            <td>${{ "%.2f"|format(order.total) }}</td>
+            <td><span class="status-badge status-{{ order.status.lower() }}">{{ order.status }}</span></td>
+            <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" style="text-align:center;color:#999;">No orders yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
