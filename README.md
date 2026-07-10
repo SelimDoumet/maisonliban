@@ -79,4 +79,4 @@ The recommendation engine is trained **offline** (`train_model.py`) and serializ
 
 ## Author
 
-Selim Doumet — BSc Mathematics, Data Science option, Université Saint-Joseph de Beyrouth
+Selim Doumet BSc Mathematics, Data Science option, Université Saint-Joseph de Beyrouth
