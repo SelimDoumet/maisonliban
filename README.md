@@ -1,4 +1,4 @@
-# MaisonLiban — AI-Powered Furniture E-Commerce Platform
+# MaisonLiban an AI-Powered Furniture E-Commerce Platform
 
 A full-stack e-commerce web application for a furniture retailer, built with Flask and powered by a hybrid machine learning recommendation engine and an LLM shopping assistant. Built as a course project (Web Applications, Dr. Anthony Tannoury, USJ) covering data science, data analysis, and data management end-to-end — from schema design to a working ML pipeline serving live predictions.
 
@@ -8,7 +8,7 @@ A full-stack e-commerce web application for a furniture retailer, built with Fla
 - **ML-powered recommendations**, two models running in production:
   - *Content-based filtering*: cosine similarity over encoded product features (category, color, size, price) to power "similar products"
   - *Collaborative filtering*: truncated SVD (matrix factorization) over a synthetic user-interaction dataset (500 users, ~8,000 interactions) to power personalized "for you" recommendations, falling back to popularity ranking for anonymous users
-- **AI shopping assistant** — an LLM chat widget (Llama 3.3 70B via Groq) that gives interior-design style suggestions and steers customers toward relevant categories
+- **AI shopping assistant** an LLM chat widget (Llama 3.3 70B via Groq) that gives interior-design style suggestions and steers customers toward relevant categories
 - **Authentication** with hashed passwords (bcrypt) and session-based login (Flask-Login)
 - **Shopping cart and checkout flow**
 - **Admin panel** for managing products, orders, and users, gated behind an admin role
